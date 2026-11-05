@@ -36,16 +36,19 @@ void setup() {
   display.clearDisplay();
   
   //test message for debugging since I'm new to C
-  char test_msg[] = "Test text";
+  char test_msg[] = "Loading...";
   show_text(test_msg);
+  delay(2000);
+  display.clearDisplay();
 }
 
 void loop() {
+  show_temp_and_humidity();
 }
 
 //shows message on a display
 void show_text(const char* msg) {
-  display.setTextSize(1);
+  display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
 
@@ -59,10 +62,24 @@ void show_text(const char* msg) {
 
 //reads temperature and humidity via dht11
 //returns int to be operated upon further
-int temp_and_humidity_read(void) {
-  int temperature = 0;
-  int humidity = 0;
+void show_temp_and_humidity(void) {
+  display.clearDisplay();
 
-  int result = dht11.readTemperatureHumidity(temperature, humidity);
-  return result;
+  float temperature = dht11.readTemperature();
+  float humidity = dht11.readHumidity();
+
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+
+  display.print("Temperature: ");
+  display.print(temperature);
+  display.print(" C");
+
+  display.setCursor(0, 20);
+  display.print("Humidity: ");
+  display.print(humidity);
+  display.print("%");
+
+  display.display();
 }
