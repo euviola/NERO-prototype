@@ -46,20 +46,6 @@ void loop() {
   show_temp_and_humidity();
 }
 
-//shows message on a display
-void show_text(const char* msg) {
-  display.setTextSize(2);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-
-  display.cp437(true); //this line was in the example, idk what it does tbh
-  for(int i=0; i<strlen(msg); i++) {
-    display.write(msg[i]);
-  }
-  
-  display.display();
-}
-
 //reads temperature and humidity via dht11
 //returns int to be operated upon further
 void show_temp_and_humidity(void) {
