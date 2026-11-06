@@ -16,12 +16,17 @@
 #define OLED_RESET -1 
 #define SCREEN_ADDRESS 0x3C
 
+int button_state = 0;
+
 //global parts
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT11 dht11(DHT_PIN);
 
 void setup() {
   Serial.begin(9600);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT);
+
   delay(500);
 
   //checks whether display is working correctly
@@ -39,6 +44,7 @@ void setup() {
 
 void loop() {
   show_temp_and_humidity();
+  button_and_led();
 }
 
 //reads temperature and humidity via dht11
@@ -63,4 +69,15 @@ void show_temp_and_humidity(void) {
   display.print("%");
 
   display.display();
+}
+
+void button_and_led(void) {
+  button_state = digitalRead(BUTTON_PIN);
+
+  if (button_state == HIGH) {
+    digitalWrite(LED_PIN, HIGH);
+  }
+  else {
+    digitalWrite(LED_PIN, LOW);
+  }
 }
