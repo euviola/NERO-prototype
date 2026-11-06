@@ -54,7 +54,6 @@ void setup() {
   doubt someone will)*/
   //rtc.SetDateTime(custom);
 
-  pinMode(LED_PIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT);
 
   delay(500);
