@@ -9,7 +9,6 @@
 
 //global variables
 //sensors, LEDs, buttons, etc.
-#define LED_PIN 23
 #define DHT_PIN 32
 #define SOUND_PIN 36
 #define BUTTON_PIN 14
@@ -73,7 +72,7 @@ void setup() {
 }
 
 void loop() {
-  button_and_led();
+  button_interface();
   if(interface_page == 1) {
     show_temp_and_humidity();
   }
@@ -136,14 +135,11 @@ void show_clock(void) {
     display.display();
 }
 
-//starts the LED if button was pressed
-//made to further use button to control an interface
-void button_and_led(void) {
+//control interface via button
+void button_interface(void) {
   current_button_state = digitalRead(BUTTON_PIN);
 
   if(last_button_state == 0 && current_button_state == 1) {
-    led_state = !led_state;
-    digitalWrite(LED_PIN, led_state);
     if(interface_page == 1) {
       interface_page = 2;
     }
