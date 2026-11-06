@@ -8,20 +8,24 @@
 #include <RtcDS1302.h>
 
 //global variables
+//sensors, LEDs, buttons, etc.
 #define LED_PIN 23
 #define DHT_PIN 32
 #define SOUND_PIN 36
 #define BUTTON_PIN 14
 
+//OLED data
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1 
 #define SCREEN_ADDRESS 0x3C
 
+//RTC data
 #define RTC_CLK 18
 #define RTC_DAT 19
 #define RTC_RST 5
 
+//global variables
 int last_button_state = 0;
 int current_button_state = 0;
 bool led_state = false;
@@ -30,22 +34,26 @@ int interface_page = 1;
 //global parts
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT11 dht11(DHT_PIN);
+
 ThreeWire RTCWire(RTC_DAT, RTC_CLK, RTC_RST);
 RtcDS1302<ThreeWire> rtc(RTCWire);
 
 void setup() {
   Serial.begin(115200);
 
+  //starting the clock
   rtc.Begin();
 
-  RtcDateTime now = rtc.GetDateTime();
+  rtc.SetIsWriteProtected(false);
+  rtc.SetIsRunning(true);
 
-  Serial.printf(
-    "%02d:%02d:%02d\n",
-    (int)now.Hour(),
-    (int)now.Minute(),
-    (int)now.Second()
-  );
+  //Set my own date (07.11.2026, 00:27:30). The abberation is like ~2 seconds because of compilation
+  RtcDateTime custom(2026, 11, 7, 0, 27, 30);
+
+  /*the commented line below is the line which should be used only once
+  when setting your clock (for those who would use this code, however I
+  doubt someone will)*/
+  //rtc.SetDateTime(custom);
 
   pinMode(LED_PIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT);
@@ -70,7 +78,7 @@ void loop() {
     show_temp_and_humidity();
   }
   else if(interface_page == 2) {
-    interface_text();
+    show_clock();
   }
 }
 
@@ -97,16 +105,35 @@ void show_temp_and_humidity(void) {
   display.display();
 }
 
-//test function for making interface
-void interface_text(void) {
+//shows date and time
+void show_clock(void) {
+  RtcDateTime now = rtc.GetDateTime();
+
   display.clearDisplay();
 
   display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
 
-  display.print("TEST TEXT TO TEST INTERFACES");
-  display.display();
+  //prints date in a "dd.mm.yyyy" format
+  display.printf(
+    "%02d.%02d.%04d",
+    (int)now.Day(),
+    (int)now.Month(),
+    (int)now.Year()
+  );
+
+  display.setTextSize(2);
+  display.setCursor(0, 20);
+
+  //prints time
+  display.printf(
+    "%02d:%02d:%02d",
+    (int)now.Hour(),
+    (int)now.Minute(),
+    (int)now.Second()
+  );
+
+    display.display();
 }
 
 //starts the LED if button was pressed
