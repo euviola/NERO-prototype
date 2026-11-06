@@ -4,6 +4,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHT11.h>
+#include <ThreeWire.h>
+#include <RtcDS1302.h>
 
 //global variables
 #define LED_PIN 23
@@ -16,6 +18,10 @@
 #define OLED_RESET -1 
 #define SCREEN_ADDRESS 0x3C
 
+#define RTC_CLK 18
+#define RTC_DAT 19
+#define RTC_RST 5
+
 int last_button_state = 0;
 int current_button_state = 0;
 bool led_state = false;
@@ -24,9 +30,23 @@ int interface_page = 1;
 //global parts
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT11 dht11(DHT_PIN);
+ThreeWire RTCWire(RTC_DAT, RTC_CLK, RTC_RST);
+RtcDS1302<ThreeWire> rtc(RTCWire);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+
+  rtc.Begin();
+
+  RtcDateTime now = rtc.GetDateTime();
+
+  Serial.printf(
+    "%02d:%02d:%02d\n",
+    (int)now.Hour(),
+    (int)now.Minute(),
+    (int)now.Second()
+  );
+
   pinMode(LED_PIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT);
 
