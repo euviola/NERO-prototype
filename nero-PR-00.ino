@@ -48,7 +48,6 @@ void loop() {
 }
 
 //reads temperature and humidity via dht11
-//returns int to be operated upon further
 void show_temp_and_humidity(void) {
   display.clearDisplay();
 
