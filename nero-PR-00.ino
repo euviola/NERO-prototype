@@ -35,11 +35,6 @@ void setup() {
   delay(2000);
   display.clearDisplay();
   
-  //test message for debugging since I'm new to C
-  char test_msg[] = "Loading...";
-  show_text(test_msg);
-  delay(2000);
-  display.clearDisplay();
 }
 
 void loop() {
