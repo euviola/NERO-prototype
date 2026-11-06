@@ -16,7 +16,9 @@
 #define OLED_RESET -1 
 #define SCREEN_ADDRESS 0x3C
 
-int button_state = 0;
+int last_button_state = 0;
+int current_button_state = 0;
+bool led_state = false;
 
 //global parts
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -71,13 +73,17 @@ void show_temp_and_humidity(void) {
   display.display();
 }
 
+//starts the LED if button was pressed
+//made to further use button to control an interface
 void button_and_led(void) {
-  button_state = digitalRead(BUTTON_PIN);
+  current_button_state = digitalRead(BUTTON_PIN);
 
-  if (button_state == HIGH) {
-    digitalWrite(LED_PIN, HIGH);
+  if(last_button_state == 0 && current_button_state == 1) {
+    led_state = !led_state;
+    digitalWrite(LED_PIN, led_state);
   }
-  else {
-    digitalWrite(LED_PIN, LOW);
-  }
+
+  last_button_state = current_button_state;
+
+  delay(100);
 }
