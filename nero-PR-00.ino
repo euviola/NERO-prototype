@@ -4,18 +4,27 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHT11.h>
+#include <ThreeWire.h>
+#include <RtcDS1302.h>
 
 //global variables
-#define LED_PIN 23
+//sensors, LEDs, buttons, etc.
 #define DHT_PIN 32
 #define SOUND_PIN 36
 #define BUTTON_PIN 14
 
+//OLED data
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1 
 #define SCREEN_ADDRESS 0x3C
 
+//RTC data
+#define RTC_CLK 18
+#define RTC_DAT 19
+#define RTC_RST 5
+
+//global variables
 int last_button_state = 0;
 int current_button_state = 0;
 bool led_state = false;
@@ -25,9 +34,26 @@ int interface_page = 1;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT11 dht11(DHT_PIN);
 
+ThreeWire RTCWire(RTC_DAT, RTC_CLK, RTC_RST);
+RtcDS1302<ThreeWire> rtc(RTCWire);
+
 void setup() {
-  Serial.begin(9600);
-  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(115200);
+
+  //starting the clock
+  rtc.Begin();
+
+  rtc.SetIsWriteProtected(false);
+  rtc.SetIsRunning(true);
+
+  //Set my own date (07.11.2026, 21:10:50). The abberation is like ~3 seconds because of compilation
+  RtcDateTime custom(2026, 11, 7, 21, 10, 50);
+
+  /*the commented line below is the line which should be used only once
+  when setting your clock (for those who would use this code, however I
+  doubt someone will)*/
+  //rtc.SetDateTime(custom);
+
   pinMode(BUTTON_PIN, INPUT);
 
   delay(500);
@@ -45,12 +71,12 @@ void setup() {
 }
 
 void loop() {
-  button_and_led();
+  button_interface();
   if(interface_page == 1) {
     show_temp_and_humidity();
   }
   else if(interface_page == 2) {
-    interface_text();
+    show_clock();
   }
 }
 
@@ -77,26 +103,42 @@ void show_temp_and_humidity(void) {
   display.display();
 }
 
-//test function for making interface
-void interface_text(void) {
+//shows date and time
+void show_clock(void) {
+  RtcDateTime now = rtc.GetDateTime();
+
   display.clearDisplay();
 
   display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
 
-  display.print("TEST TEXT TO TEST INTERFACES");
-  display.display();
+  //prints date in a "dd.mm.yyyy" format
+  display.printf(
+    "%02d.%02d.%04d",
+    (int)now.Day(),
+    (int)now.Month(),
+    (int)now.Year()
+  );
+
+  display.setTextSize(2);
+  display.setCursor(0, 20);
+
+  //prints time
+  display.printf(
+    "%02d:%02d:%02d",
+    (int)now.Hour(),
+    (int)now.Minute(),
+    (int)now.Second()
+  );
+
+    display.display();
 }
 
-//starts the LED if button was pressed
-//made to further use button to control an interface
-void button_and_led(void) {
+//control interface via button
+void button_interface(void) {
   current_button_state = digitalRead(BUTTON_PIN);
 
   if(last_button_state == 0 && current_button_state == 1) {
-    led_state = !led_state;
-    digitalWrite(LED_PIN, led_state);
     if(interface_page == 1) {
       interface_page = 2;
     }
