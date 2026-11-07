@@ -46,8 +46,8 @@ void setup() {
   rtc.SetIsWriteProtected(false);
   rtc.SetIsRunning(true);
 
-  //Set my own date (07.11.2026, 00:27:30). The abberation is like ~2 seconds because of compilation
-  RtcDateTime custom(2026, 11, 7, 0, 27, 30);
+  //Set my own date (07.11.2026, 21:10:50). The abberation is like ~3 seconds because of compilation
+  RtcDateTime custom(2026, 11, 7, 21, 10, 50);
 
   /*the commented line below is the line which should be used only once
   when setting your clock (for those who would use this code, however I
