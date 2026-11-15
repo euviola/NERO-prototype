@@ -18,5 +18,9 @@ The logger also features a simple interface with two pages:
 ### Assembly scheme
 ![alt text](image.png)
 
+### Schematic (made via KiCAD)
+![alt text](image-1.png)
+
 ### How it works?
 Very simple. Push the button to change the page and behold the data on a screen :)
+
