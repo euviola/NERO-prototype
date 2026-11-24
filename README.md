@@ -16,10 +16,13 @@ The logger also features a simple interface with two pages:
 - a Button for display controls
 
 ### Assembly scheme
-![alt text](image.png)
+![alt text](imgs/image.png)
 
 ### Schematic (made via KiCAD)
-![alt text](image-1.png)
+![alt text](imgs/image-1.png)
+
+### PCB (made via KiCAD)
+![alt text](imgs/nero-PR-00-CAD.png)
 
 ### How it works?
 Very simple. Push the button to change the page and behold the data on a screen :)
